@@ -60,7 +60,7 @@ type alias Url =
 
 {-| Is the URL served over a secure connection or not?
 -}
-type Protocol = Http | Https
+type Protocol = Http | Https | File
 
 
 {-| Attempt to break a URL up into [`Url`](#Url). This is useful in
@@ -115,6 +115,9 @@ fromString str =
 
   else if String.startsWith "https://" str then
     chompAfterProtocol Https (String.dropLeft 8 str)
+
+  else if String.startsWith "file://" str then
+    chompAfterProtocol File (String.dropLeft 7 str)
 
   else
     Nothing
@@ -192,6 +195,8 @@ toString url =
 
         Https ->
           "https://"
+
+        File -> "file://"
   in
   addPort url.port_ (http ++ url.host) ++ url.path
     |> addPrefixed "?" url.query
